@@ -29,10 +29,9 @@ build/
 Thumbs.db
 desktop.ini
 
-# Data and exports (likely large or sensitive)
+# Data (large files and generated outputs)
 data/input/
 data/output/
-export/
 
 # Logs
 *.log
