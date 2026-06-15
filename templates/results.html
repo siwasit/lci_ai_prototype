@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %} — Results{% endblock %}
+{% block content %}
+
+<!-- Steps -->
+<div class="d-flex gap-3 mb-4 align-items-center">
+  <span class="badge bg-success step-badge px-3 py-2">✓ STEP 1 — CONFIGURED</span>
+  <span class="text-muted">→</span>
+  <span class="badge bg-success step-badge px-3 py-2">✓ STEP 2 — REVIEWED</span>
+  <span class="text-muted">→</span>
+  <span class="badge bg-primary step-badge px-3 py-2">STEP 3 — EXPORT</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="gwp-box mb-4">
+      <div class="unit">Final GWP100 (IPCC AR6)</div>
+      <div class="number">{{ "%.0f"|format(gwp.TOTAL) }}</div>
+      <div class="unit">kg CO₂-eq / functional unit</div>
+      <div class="mt-2" style="font-size:.8rem; opacity:.7">
+        ≈ {{ "%.3f"|format(gwp.TOTAL / 1000) }} kg CO₂-eq / kg paddy<br>
+        Literature range: 0.83–1.34 kg CO₂-eq/kg
+      </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <div class="small text-muted mb-1 fw-semibold">Process</div>
+      <div>{{ lci.process_name }}</div>
+    </div>
+    <div class="card p-3 mb-3">
+      <div class="small text-muted mb-1 fw-semibold">Functional unit</div>
+      <div>{{ lci.functional_unit }}</div>
+    </div>
+    <div class="card p-3">
+      <div class="small text-muted mb-1 fw-semibold">System boundary</div>
+      <div>{{ lci.system_boundary }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card p-4">
+      <h5 class="fw-semibold mb-1">✓ Dataset exported successfully</h5>
+      <p class="text-muted small mb-4">
+        Expert-reviewed and approved. Download the output files below.
+        The ILCD XML is ready for ingestion into the Thai National LCI Database.
+      </p>
+
+      {% if exports %}
+      <div class="d-grid gap-3">
+        {% if exports.json %}
+        <a href="/download/{{ exports.json }}" class="btn btn-outline-primary d-flex align-items-center gap-3">
+          <span class="fs-4">📄</span>
+          <div class="text-start">
+            <div class="fw-semibold">JSON</div>
+            <div class="small text-muted">Full dataset with metadata — machine-readable</div>
+          </div>
+        </a>
+        {% endif %}
+        {% if exports.csv %}
+        <a href="/download/{{ exports.csv }}" class="btn btn-outline-success d-flex align-items-center gap-3">
+          <span class="fs-4">📊</span>
+          <div class="text-start">
+            <div class="fw-semibold">CSV</div>
+            <div class="small text-muted">Flat flow table — open in Excel for review</div>
+          </div>
+        </a>
+        {% endif %}
+        {% if exports.ilcd %}
+        <a href="/download/{{ exports.ilcd }}" class="btn btn-outline-danger d-flex align-items-center gap-3">
+          <span class="fs-4">🗂</span>
+          <div class="text-start">
+            <div class="fw-semibold">ILCD XML</div>
+            <div class="small text-muted">ILCD-compliant — ready for Thai National LCI DB ingestion</div>
+          </div>
+        </a>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="alert alert-warning">No export files found. Try running the pipeline again.</div>
+      {% endif %}
+
+      <hr class="my-4">
+
+      <!-- GWP mini-table -->
+      <h6 class="fw-semibold mb-2">GWP100 summary</h6>
+      <table class="table table-sm mb-0">
+        <thead class="table-light">
+          <tr><th>Emission</th><th class="text-end">CO₂-eq (kg)</th></tr>
+        </thead>
+        <tbody>
+        {% for name, data in gwp.items() %}
+          {% if name not in ('TOTAL', 'unit') %}
+          <tr>
+            <td>{{ name }}</td>
+            <td class="text-end">{{ "%.1f"|format(data.co2eq) }}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+        <tfoot class="table-dark">
+          <tr>
+            <th>TOTAL</th>
+            <th class="text-end">{{ "%.1f"|format(gwp.TOTAL) }}</th>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="mt-4">
+        <a href="/" class="btn btn-outline-secondary">← New process</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

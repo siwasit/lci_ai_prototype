@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %} — Configure{% endblock %}
+{% block content %}
+
+<!-- Steps -->
+<div class="d-flex gap-3 mb-4 align-items-center">
+  <span class="badge bg-primary step-badge px-3 py-2">STEP 1 — CONFIGURE</span>
+  <span class="text-muted">→</span>
+  <span class="badge bg-secondary step-badge px-3 py-2">STEP 2 — REVIEW</span>
+  <span class="text-muted">→</span>
+  <span class="badge bg-secondary step-badge px-3 py-2">STEP 3 — EXPORT</span>
+</div>
+
+<div class="row g-4">
+  <!-- Config form -->
+  <div class="col-lg-7">
+    <div class="card p-4">
+      <h5 class="fw-semibold mb-1">Process Configuration</h5>
+      <p class="text-muted small mb-4">
+        Fill in the process details. The AI will extract LCI flows from the corpus
+        and present them for your expert review before export.
+      </p>
+
+      <form action="/run" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Process Name</label>
+          <input type="text" name="process_name" class="form-control"
+                 value="{{ default_process }}" required>
+          <div class="form-text">ISO TS-14048 process identifier</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Functional Unit</label>
+          <input type="text" name="functional_unit" class="form-control"
+                 value="{{ default_fu }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">System Boundary</label>
+          <input type="text" name="system_boundary" class="form-control"
+                 value="Cradle to farm gate (excludes rice milling)">
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Allocation Method</label>
+            <select name="allocation" class="form-select">
+              <option value="none" selected>No allocation (co-product expansion)</option>
+              <option value="mass">Mass allocation</option>
+              <option value="economic">Economic allocation</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">LLM Provider</label>
+            <select name="provider" class="form-select">
+              <option value="demo" selected>Demo (no API key needed)</option>
+              <option value="anthropic">Anthropic Claude</option>
+              <option value="openai">OpenAI GPT-4o</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Upload Literature PDF <span class="text-muted fw-normal">(optional)</span></label>
+          <input type="file" name="pdf_file" class="form-control" accept=".pdf">
+          <div class="form-text">Leave blank to use the built-in demo corpus (Thai paddy rice LCA papers).</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary px-4">
+          Run Extraction Pipeline →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Info panel -->
+  <div class="col-lg-5">
+    <div class="card p-4 mb-3">
+      <h6 class="fw-semibold mb-3">What the pipeline does</h6>
+      <ol class="small text-muted ps-3 mb-0" style="line-height:2">
+        <li>Chunks the corpus into 400-token passages</li>
+        <li>Retrieves the top-5 passages relevant to your process</li>
+        <li>Asks the LLM to extract every input &amp; output flow</li>
+        <li>Validates each flow against literature ranges</li>
+        <li>Calculates GWP100 (IPCC AR6)</li>
+        <li><strong>Presents flagged flows for your review</strong></li>
+        <li>Exports JSON / CSV / ILCD XML after you approve</li>
+      </ol>
+    </div>
+    <div class="card p-4 bg-light border-0">
+      <h6 class="fw-semibold mb-2">Demo corpus (built-in)</h6>
+      <ul class="small text-muted mb-0 ps-3" style="line-height:2">
+        <li>Samson et al. (2020) — Thai rice LCA</li>
+        <li>Phungrassami et al. (2015) — Jasmine rice CF</li>
+        <li>OAE (2022) — Thai rice statistics</li>
+        <li>IPCC AR6 (2021) — GHG emission factors</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

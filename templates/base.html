@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCI-AI Prototype{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <style>
+    body { background: #f8f9fa; }
+    .navbar { background: #1a3c5e !important; }
+    .navbar-brand, .navbar-text { color: #fff !important; }
+    .step-badge { font-size: 0.7rem; letter-spacing: .05em; }
+    .flow-flag  { background: #fff3cd; }
+    .flow-pass  { background: #d1e7dd; }
+    .badge-FLAG { background: #dc3545; }
+    .badge-PASS { background: #198754; }
+    .badge-NO_RANGE { background: #6c757d; }
+    .gwp-box { background: #1a3c5e; color: #fff; border-radius: 8px; padding: 1.5rem 2rem; }
+    .gwp-box .number { font-size: 2.5rem; font-weight: 700; }
+    .gwp-box .unit   { font-size: 0.9rem; opacity: .8; }
+    .card { box-shadow: 0 1px 4px rgba(0,0,0,.08); border: none; }
+    footer { font-size: .8rem; color: #aaa; text-align: center; padding: 2rem 0; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">⚗ LCI-AI Prototype</a>
+    <span class="navbar-text ms-auto" style="font-size:.8rem; opacity:.7">
+      Thai National LCI Database — Expert Review System
+    </span>
+  </div>
+</nav>
+
+<div class="container pb-5">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ 'danger' if cat == 'error' else 'info' }} alert-dismissible fade show">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<footer>LCI-AI Prototype — TOR Hands-on Demo</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
