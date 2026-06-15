@@ -5,6 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running the app
 
 ```bash
+# Install dependencies
+pip install -r requirements.txt
+
 # Web UI (recommended — starts Flask on port 5000)
 python app.py
 
@@ -27,6 +30,20 @@ export OPENAI_API_KEY="sk-..."
 
 All settings (model names, chunk size, top-k, paths, default process) live in `config.py`. The `LCI_LLM_PROVIDER` env var overrides `config.LLM_PROVIDER`.
 
+## Vercel deployment
+
+Entry point: `api/index.py` adds the project root to `sys.path` then imports `app`. Routing is configured in `vercel.json` (rewrites everything to `/api/index`).
+
+Required environment variables in Vercel project settings:
+- `FLASK_SECRET_KEY` — any long random string; keeps Flask sessions stable across cold starts
+- `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` — only needed if using live LLM extraction
+
+`config.py` detects the `VERCEL=1` system env var and redirects all file I/O (`DATA_INPUT`, `DATA_OUTPUT`) to `/tmp`, since Vercel's filesystem is read-only outside `/tmp`.
+
+The in-memory `_store` dict in `app.py` does not survive across serverless invocations. For the demo this is acceptable (Vercel keeps instances warm within a session), but a cold start mid-flow will redirect users back to the home page.
+
+**Gotcha:** `export/` is a Python source package and must be committed to git. It was previously (incorrectly) gitignored — if you ever recreate `.gitignore`, make sure `export/` is not listed there.
+
 ## Architecture
 
 The system has two entry points that share the same pipeline logic:
@@ -45,7 +62,7 @@ extraction.py  → build_prompt()        fills chain-of-thought prompt template
 models.py      → LCIDataset / LCIFlow  typed containers for the inventory data
 validation.py  → validate_dataset()    range-checks flows against _RANGES dict; returns PASS/FLAG/NO_RANGE
 lcia.py        → calculate_gwp100()    multiplies emission flows by _CF_GWP100 factors (IPCC AR6)
-export/        → to_json / to_csv / to_ilcd   write files to data/output/
+export/        → to_json / to_csv / to_ilcd   write files to data/output/ (or /tmp on Vercel)
 ```
 
 ### Core data model

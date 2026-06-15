@@ -28,7 +28,11 @@ lci_ai_prototype/
 ├── app.py                     # Flask web UI entry point
 ├── main.py                    # CLI entry point
 ├── config.py                  # Central settings (paths, model names, chunking params)
+├── vercel.json                # Vercel routing (rewrites everything to api/index)
 ├── requirements.txt
+│
+├── api/
+│   └── index.py               # Vercel serverless entry point (imports app.py)
 │
 ├── pipeline/
 │   ├── models.py              # LCIFlow dataclass + LCIDataset (with from_dict, corrections)
@@ -62,7 +66,7 @@ lci_ai_prototype/
 
 ```bash
 cd lci_ai_prototype
-pip install flask pdfplumber python-dotenv
+pip install -r requirements.txt
 python app.py
 # open http://localhost:5000
 ```
@@ -70,9 +74,9 @@ python app.py
 ### Option B — CLI
 
 ```bash
-pip install pdfplumber python-dotenv
+pip install -r requirements.txt
 python main.py --mode demo          # demo data, no API key needed
-python main.py --mode extract --pdf data/input/ --api anthropic
+python main.py --mode extract --pdf data/input/paper.pdf --api anthropic
 python main.py --mode validate      # validate demo LCI only
 ```
 
@@ -80,6 +84,20 @@ Set your API key before using a real LLM:
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."   # or OPENAI_API_KEY
 ```
+
+### Option C — Vercel (hosted)
+
+The app is deployable as a Vercel serverless function. The entry point is `api/index.py`; routing is configured in `vercel.json`.
+
+Required environment variables in Vercel project settings:
+
+| Variable | Purpose |
+|----------|---------|
+| `FLASK_SECRET_KEY` | Keeps Flask sessions stable across cold starts |
+| `ANTHROPIC_API_KEY` | Only needed for Anthropic LLM extraction |
+| `OPENAI_API_KEY` | Only needed for OpenAI LLM extraction |
+
+**Note:** File exports (JSON/CSV/ILCD) are written to `/tmp` on Vercel and are available for download within the same session. The in-memory session store does not survive cold starts — a very long idle period will redirect users back to the home page.
 
 ---
 
