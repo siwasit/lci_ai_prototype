@@ -1,16 +1,7 @@
 flask>=3.0.0
-# Core
-pdfplumber>=0.10.0       # PDF text extraction
-pandas>=2.0.0            # optional: DataFrame helpers
-openpyxl>=3.1.0          # Excel export (if needed)
+pdfplumber>=0.10.0
+python-dotenv>=1.0.0
 
-# LLM providers (install only what you use)
-anthropic>=0.25.0        # pip install anthropic
-openai>=1.30.0           # pip install openai
-
-# Vector retrieval (upgrade from keyword search)
-faiss-cpu>=1.7.4         # pip install faiss-cpu
-# chromadb>=0.4.0        # alternative: pip install chromadb
-
-# Utilities
-python-dotenv>=1.0.0     # load .env for API keys
+# LLM providers
+anthropic>=0.25.0
+openai>=1.30.0
