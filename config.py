@@ -21,8 +21,11 @@ EILCD_SDK_PATH = os.path.join(
 
 # ── Paths ─────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(__file__)
-DATA_INPUT  = os.path.join(BASE_DIR, "data", "input")
-DATA_OUTPUT = os.path.join(BASE_DIR, "data", "output")
+# Vercel's filesystem is read-only except for /tmp
+_on_vercel  = os.getenv("VERCEL") == "1"
+_tmp        = "/tmp" if _on_vercel else BASE_DIR
+DATA_INPUT  = os.path.join(_tmp, "data", "input")  if _on_vercel else os.path.join(BASE_DIR, "data", "input")
+DATA_OUTPUT = os.path.join(_tmp, "data", "output") if _on_vercel else os.path.join(BASE_DIR, "data", "output")
 
 # ── Process defaults ─────────────────────────────────────────────
 DEFAULT_PROCESS_NAME = "Paddy rice cultivation, conventional, irrigated, Thailand"

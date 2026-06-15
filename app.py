@@ -31,7 +31,7 @@ from export.to_csv  import export_csv
 from export.to_ilcd import export_ilcd
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-in-prod")
 
 # ── In-memory session store (fine for single-user demo) ──────────────
 _store: dict[str, dict] = {}
